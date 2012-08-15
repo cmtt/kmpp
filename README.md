@@ -76,7 +76,7 @@ tbi
 ## Todo
 
 * improve testing and visualizations
-* remove dependency on [Underscore.js](http://underscorejs.org/)
+* remove dependency on [Lo-Dash](http://lodash.com/)
 
 Further reading
 ---------------
