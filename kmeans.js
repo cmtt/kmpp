@@ -1,4 +1,16 @@
 var KMeans = (function () {
+
+  var ERR_K_IS_ZERO = 'k cannot be zero';
+
+  if (typeof _ === 'function') {
+    var sortBy = _.sortBy, reduce = _.reduce;
+  } else {
+    /* Thanks to madrobby and Karnash */
+    var sortBy = function(a,b,c){c=a.slice();return c.sort(function(d,e){d=b(d),e=b(e);return(d<e?-1:d>e?1:0)})}, reduce = function(t,c) {var u; for (var i = (v=t[0],1); i < t.length;) v = c(v,t[i],i++,t); i<2 & u && u(); return v;};
+  }
+
+  /** Constructor */
+
   var kmeans = function () {
     this.kmpp = true;
     this.maxWidth = 640;
@@ -9,133 +21,198 @@ var KMeans = (function () {
     this.k = 0;
   };
 
+  /** Resets k-means. */
+
   kmeans.prototype.reset = function () {
-    var self = this;
-    self.iterations = 0;
-    self.converged = false;
-    self.points = [];
-    self.centroids = [];
+    this.iterations = 0;
+    this.converged = false;
+    this.points = [];
+    this.centroids = [];
   };
+
+  /** Measures the Manhattan distance between two points. */
 
   kmeans.prototype.distance =  function(a, b) {
-    return Math.pow(a.x - b.x, 2) +  Math.pow(a.y - b.y, 2);
+    return Math.sqrt( Math.pow(a.x - b.x, 2) +  Math.pow(a.y - b.y, 2) );
   };
+
+  /** Resets k-means and sets initial points*/
 
   kmeans.prototype.setPoints = function (points) {
-    var self = this;
-    self.reset();
-    self.points = points;
+    this.reset();
+    this.points = points;
   };
+
+  /** Guess the amount of centroids to be found by the rule of thumb */
 
   kmeans.prototype.guessK = function () {
-    var self = this;
-    self.k = ~~(Math.sqrt(self.points.length*0.5));
+    this.k = ~~(Math.sqrt(this.points.length*0.5));
   };
+
+  /** Chooses random centroids */
 
   kmeans.prototype.chooseRandomCentroids = function () {
-    var self = this;
-    for (var i = 0; i < self.k; ++i) {
+    for (var i = 0; i < this.k; ++i) {
       var centroid = {
         centroid : i,
-        x : ~~(Math.random()*self.maxWidth),
-        y : ~~(Math.random()*self.maxHeight),
+        x : ~~(Math.random()*this.maxWidth),
+        y : ~~(Math.random()*this.maxHeight),
         items : 0
-      }
-      self.centroids[i] = centroid;
+      };
+      this.centroids[i] = centroid;
     }
   };
 
-  kmeans.prototype.cluster = function (callback) {
-    var self = this;
-    if (self.k === 0) {
-      if (typeof callback === 'function') callback(new Error('k cannot be zero'));
-      else throw new Error('k cannot be zero');
-      return;
-    } 
+  /** Clusters the provided set of points. */
 
-    while (!self.converged || (self.maxIterations > 0 && self.iterations > self.maxIterations)) {
-      self.iterate();
+  kmeans.prototype.cluster = function (callback) {
+
+    if (this.k === 0) {
+      if (typeof callback === 'function') {
+        callback(new Error(ERR_K_IS_ZERO));
+      } else {
+        throw new Error(ERR_K_IS_ZERO);
+      }
+      return;
     }
-    if (typeof callback === 'function') callback(null, self.centroids);
-  }
+
+    /** Iterate until converged or the maximum amount of iterations is reached. */
+
+    while (!this.converged || (this.maxIterations > 0 && this.iterations > this.maxIterations)) {
+      this.iterate();
+    }
+
+    if (typeof callback === 'function') callback(null, this.centroids);
+  };
+
+  /** Measure the distance to a point, specified by its index. */
+
+  kmeans.prototype.measureDistance =   function (i) {
+    var self = this;
+    return function ( centroid ) {
+      return self.distance(centroid, self.points[i]);
+    };
+  };
+
+  /** Iterates over the provided points one time */
 
   kmeans.prototype.iterate = function () {
-    var self = this;
-    if (self.k === 0) return;
-    if (self.converged === true) return;
+    var i;
 
-    self.converged = true;
-    ++self.iterations;
+    /** When the result doesn't change anymore, the final result has been found. */
+    if (this.converged === true) {
+      return;
+    }
 
-    var sums = new Array(self.k);
-    for (var i = 0; i < self.k;++i) {
+    this.converged = true;
+
+    ++this.iterations;
+
+    /** Prepares the array of the  */
+
+    var sums = new Array(this.k);
+
+    for (i = 0; i < this.k; ++i) {
       sums[i] = { x : 0, y : 0, items : 0 };
     }
 
-    for (var i = 0; i < self.points.length; ++i) {
-      var distances = _.sortBy(self.centroids, function ( centroid ) {
-        return self.distance(centroid, self.points[i]);
-      });
+    /** Find the closest centroid for each point */
+
+    for (i = 0, l = this.points.length; i < l; ++i) {
+
+      var distances = sortBy(this.centroids, this.measureDistance(i));
       var closestItem = distances[0];
       var centroid = closestItem.centroid;
-      if (typeof self.points[i].centroid  !== 'number' || self.points[i].centroid !== centroid) self.converged = false;
-      self.points[i].centroid = centroid;
-      sums[centroid].x += self.points[i].x;
-      sums[centroid].y += self.points[i].y;
+
+      /**
+       * When the point is not attached to a centroid or the point was
+       * attached to some other centroid before, the result differs from the
+       * previous iteration.
+       */
+
+      if (typeof this.points[i].centroid  !== 'number' || this.points[i].centroid !== centroid) {
+        this.converged = false;
+      }
+
+      /** Attach the point to the centroid */
+
+      this.points[i].centroid = centroid;
+
+      /** Add the points' coordinates to the sum of its centroid */
+
+      sums[centroid].x += this.points[i].x;
+      sums[centroid].y += this.points[i].y;
+
       ++sums[centroid].items;
     }
 
-    for (var i = 0; i < self.k; ++i) {
+    /** Re-calculate the center of the centroid. */
+
+    for (i = 0; i < this.k; ++i) {
       if (sums[i].items > 0) {
-        self.centroids[i].x = sums[i].x / sums[i].items;
-        self.centroids[i].y = sums[i].y / sums[i].items;
+        this.centroids[i].x = sums[i].x / sums[i].items;
+        this.centroids[i].y = sums[i].y / sums[i].items;
       }
-      self.centroids[i].items = sums[i].items;
+      this.centroids[i].items = sums[i].items;
     }
+
   };
 
   kmeans.prototype.initCentroids = function () {
-    var self = this;
-    if (self.kmpp !== true) {
-      self.chooseRandomCentroids();
+    var i, k,cmp1, cmp2;
+
+    var addIterator = function (x,y) { return x+y; };
+
+    /**
+     * When k-means++ is disabled, choose random centroids.
+     */
+
+    if (this.kmpp !== true) {
+      this.chooseRandomCentroids();
       return;
     }
 
-    // K-Means++ initialization
+    /** K-Means++ initialization */
 
-    var D = []
-      , ntries = 2 + Math.round(Math.log(self.k));
+    /** determine the amount of tries */
+    var D = [], ntries = 2 + Math.round(Math.log(this.k));
 
-    // 1. Choose one center uniformly at random from among the data points.
+    /** 1. Choose one center uniformly at random from the data points. */
 
-    var p0 = self.points[ ~~(Math.random() * self.points.length) ];
+    var l = this.points.length;
+
+    var p0 = this.points[ ~~(Math.random() * l) ];
+
     p0.centroid = 0;
-    self.centroids = [ p0 ];
+    this.centroids = [ p0 ];
 
-    // 2. For each data point x, compute D(x), the distance between x and the nearest center that has already been chosen.
+    /**
+     * 2. For each data point x, compute D(x), the distance between x and
+     * the nearest center that has already been chosen.
+     */
 
-    for (var i = 0;  i < self.points.length; ++i) {
-      var distances = _.sortBy(self.centroids, function ( centroid ) {
-        return self.distance(centroid, self.points[i]);
-      });
-      var closestItem = distances[0];
-      D[i] = Math.pow( self.distance(distances[0], self.points[i]) , 2);
+    for (i = 0; i < l; ++i) {
+      D[i] = Math.pow(this.distance(p0, this.points[i]), 2);
     }
 
-    var Dsum = _.reduce(D, function (x,y) { return x+y; });
+    var Dsum = reduce(D, addIterator);
+    // var Dsum = D.reduce(addIterator);
 
-    // 3. Choose one new data point at random as a new center, using a weighted probability distribution where a point x is chosen with probability proportional to D(x)2.
+    /**
+     * 3. Choose one new data point at random as a new center, using a
+     * weighted probability distribution where a point x is chosen with
+     * probability proportional to D(x)2.
+     * (Repeated until k centers have been chosen.)
+     */
 
-    // 4. (Repeated until k centers have been chosen.)
+    for (k = 1; k < this.k; ++k) {
 
-    for (var k = 1; k < self.k; ++k) {
-      var bestDsum = -1
-        , bestIdx = -1;
+      var bestDsum = -1, bestIdx = -1;
 
-      for (var i = 0; i < ntries; ++i) {
+      for (i = 0; i < ntries; ++i) {
         var rndVal = ~~(Math.random() * Dsum);
 
-        for (var n = 0; n < self.points.length; ++n) {
+        for (var n = 0; n < l; ++n) {
           if (rndVal <= D[n]) {
             break;
           } else {
@@ -144,13 +221,14 @@ var KMeans = (function () {
         }
 
         var tmpD = [];
-        for (var m = 0; m < self.points.length; ++m) {
-          var cmp1 = D[m]
-            , cmp2 = Math.pow(self.distance(self.points[m],self.points[n]),2);
+        for (var m = 0; m < l; ++m) {
+          cmp1 = D[m];
+          cmp2 = Math.pow(this.distance(this.points[m],this.points[n]),2);
           tmpD[m] = cmp1 > cmp2 ? cmp2 : cmp1;
         }
 
-        var tmpDsum = _.reduce(tmpD, function (x,y ) { return x+y; });
+        var tmpDsum = reduce(tmpD, addIterator);
+        // var tmpDsum = tmpD.reduce(addIterator);
 
         if (bestDsum < 0 || tmpDsum < bestDsum) {
           bestDsum = tmpDsum, bestIdx = n;
@@ -160,20 +238,25 @@ var KMeans = (function () {
       Dsum = bestDsum;
 
       var centroid = {
-        x : self.points[bestIdx].x,
-        y : self.points[bestIdx].y,
+        x : this.points[bestIdx].x,
+        y : this.points[bestIdx].y,
         centroid : k,
         items : 0
-      }
+      };
 
-      self.centroids.push(centroid);
+      this.centroids.push(centroid);
 
-      for (var i = 0; i < self.points.length; ++i) {
-        var cmp1 = D[i]
-          , cmp2 = Math.pow(self.distance(self.points[bestIdx],self.points[i]), 2);
+      for (i = 0; i < l; ++i) {
+        cmp1 = D[i];
+        cmp2 = Math.pow(this.distance(this.points[bestIdx],this.points[i]), 2);
         D[i] = cmp1 > cmp2 ? cmp2 : cmp1;
       }
     }
+
   };
   return kmeans;
 })();
+
+if (typeof module === 'object') {
+  module.exports = KMeans;
+}

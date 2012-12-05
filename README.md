@@ -1,15 +1,13 @@
 kmeans-js
 =========
 
-When dealing with lots of data points, clustering algorithms may be needed for paritioning them into groups. The k-means algorithm partitions n data points into k clusters and finds the centroids of these clusters incrementally.
+When dealing with lots of data points, clustering algorithms may be needed in order to group them. The k-means algorithm partitions n data points into k clusters and finds the centroids of these clusters incrementally.
 
 The basic k-means algorithm is initialized with k centroids at a random position. This implementation addresses some disadvantages of this initialization method with the k-means++ algorithm.
 
-The main algorithm assigns nearby data points to the corresponding cluster, then the centroids of each cluster are re-calculated. These assignment/recalculating steps are repeated until the centroids aren't changing anymore.
+The main algorithm assigns data points to the closest cluster, then the centroids of each cluster are re-calculated. These assignment/recalculating steps are repeated until the centroids don't changing anymore.
 
-Currently, this script depends on Lo-Dash, but unnecessary depedencies are likely to be removed in future versions.
-
-## Setting up
+## Setting up a new instance
 
   var k = new KMeans();
 
@@ -47,11 +45,11 @@ Clears data points and calculated results.
 
 ### setPoints (points)
 
-setPoints assigns an array of data points which should be clustered and calls reset(). Use the the format [{ x : x0, y : y0 }, ... , { x : xn, y: yn }].  
+setPoints assigns an array of data points which should be clustered and calls reset(). Use the the format [{ x : x0, y : y0 }, ... , { x : xn, y: yn }].
 
 ### guessK ()
 
-This lets kmeans-js guess the amount of clusters by the rule of thumb. (k = Math.sqrt( n * 0.5)). See below for advice when choosing the right value for k.
+This lets kmeans-js guess the amount of clusters by the rule of thumb. (k = Math.sqrt( n * 0.5)). See below for advice for choosing the right value for k.
 
 ### initCentroids ()
 
@@ -59,11 +57,11 @@ The initial centroids are selected by the k-means++ algorithm or randomly. The l
 
 ### iterate ()
 
-As k-means is an incremental algorithm, the iterate function should be called until the centroids do not change anymore. 
+As k-means is an incremental algorithm, the iterate function should be called until the centroids do not change anymore.
 
 ### cluster (callback)
 
-Convenience function which calls the iterate() function until the algorithm has finished. 
+Convenience function which calls the iterate() function until the algorithm has finished.
 
 ## Tests
 
@@ -71,12 +69,13 @@ At the moment, you could open index.html or index-animated.html in your browser.
 
 ## Changes
 
-tbi
+0.0.2
+
++ Removed unnecessary dependency on _/Lo-Dash
 
 ## Todo
 
 * improve testing and visualizations
-* remove dependency on [Lo-Dash](http://lodash.com/)
 
 Further reading
 ---------------

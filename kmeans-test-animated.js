@@ -1,4 +1,4 @@
-// kmjs-test.js
+// kmjs-test-animated.js
 
 // quick and dirty.
 
@@ -32,7 +32,7 @@ $(window).load(function () {
   kmTest.initCanvas = function () {
     var canvas = document.getElementById('canv');
     canvas.width = $('#wrapper').innerWidth();
-    canvas.height = $('#wrapper').innerHeight();    
+    canvas.height = $('#wrapper').innerHeight();
 
     var ctx = canvas.getContext('2d');
     var timer = null;
@@ -57,7 +57,7 @@ $(window).load(function () {
             ctx.fillStyle = 'rgba(0,0,0,1)';
             ctx.fillText(tt+'ms',10,52);
             ctx.fillText('Click to restart clustering',10,38);
-            timer = null;            
+            timer = null;
             k.kmpp = !k.kmpp;
             k.setPoints(items);
             k.guessK();
@@ -109,7 +109,7 @@ $(window).load(function () {
     ctx.shadowColor ='rgba(0,0,0,1)';
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
-    ctx.shadowBlur = 12; 
+    ctx.shadowBlur = 12;
 
     for (var i = 0; i < k.centroids.length; ++i) {
       if (!k.centroids[i].items) {
@@ -122,7 +122,7 @@ $(window).load(function () {
       ctx.fillText( k.centroids[i].centroid, k.centroids[i].x-8,k.centroids[i].y+5);
     }
     ctx.shadowBlur = 0;
-  } 
+  }
 
 
   kmTest.initCanvas();
