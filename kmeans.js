@@ -3,10 +3,16 @@ var KMeans = (function () {
   var ERR_K_IS_ZERO = 'k cannot be zero';
 
   if (typeof _ === 'function') {
-    var sortBy = _.sortBy, reduce = _.reduce;
+    var reduce = _.reduce;
   } else {
     /* Thanks to madrobby and Karnash */
-    var sortBy = function(a,b,c){c=a.slice();return c.sort(function(d,e){d=b(d),e=b(e);return(d<e?-1:d>e?1:0)})}, reduce = function(t,c) {var u; for (var i = (v=t[0],1); i < t.length;) v = c(v,t[i],i++,t); i<2 & u && u(); return v;};
+    reduce = function(t,c) {
+        var u;
+        for (var i = (v=t[0],1); i < t.length;)
+            v = c(v,t[i],i++,t);
+        i<2 & u && u();
+        return v;
+    };
   }
 
   /** Constructor */
@@ -97,7 +103,7 @@ var KMeans = (function () {
   /** Iterates over the provided points one time */
 
   kmeans.prototype.iterate = function () {
-    var i;
+    var i, j;
 
     /** When the result doesn't change anymore, the final result has been found. */
     if (this.converged === true) {
@@ -120,9 +126,16 @@ var KMeans = (function () {
 
     for (i = 0, l = this.points.length; i < l; ++i) {
 
-      var distances = sortBy(this.centroids, this.measureDistance(i));
-      var closestItem = distances[0];
-      var centroid = closestItem.centroid;
+      // Finds the centroid with the closest distance to the current point
+      var centroid = 0;
+      var minDist = this.distance(this.centroids[0], this.points[i]);
+      for(j = 1; j < this.centroids.length; j++){
+          var dist = this.distance(this.centroids[j], this.points[i]);
+          if(dist < minDist){
+              minDist = dist;
+              centroid = j;
+          }
+      }
 
       /**
        * When the point is not attached to a centroid or the point was
