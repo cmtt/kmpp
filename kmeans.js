@@ -39,7 +39,7 @@ var KMeans = (function () {
   /** Measures the Manhattan distance between two points. */
 
   kmeans.prototype.distance =  function(a, b) {
-    return Math.sqrt( Math.pow(a.x - b.x, 2) +  Math.pow(a.y - b.y, 2) );
+    return Math.pow(a.x - b.x, 2) +  Math.pow(a.y - b.y, 2);
   };
 
   /** Resets k-means and sets initial points*/
@@ -89,15 +89,6 @@ var KMeans = (function () {
     }
 
     if (typeof callback === 'function') callback(null, this.centroids);
-  };
-
-  /** Measure the distance to a point, specified by its index. */
-
-  kmeans.prototype.measureDistance =   function (i) {
-    var self = this;
-    return function ( centroid ) {
-      return self.distance(centroid, self.points[i]);
-    };
   };
 
   /** Iterates over the provided points one time */
@@ -205,7 +196,7 @@ var KMeans = (function () {
      */
 
     for (i = 0; i < l; ++i) {
-      D[i] = Math.pow(this.distance(p0, this.points[i]), 2);
+      D[i] = this.distance(p0, this.points[i]);
     }
 
     var Dsum = reduce(D, addIterator);
@@ -236,7 +227,7 @@ var KMeans = (function () {
         var tmpD = [];
         for (var m = 0; m < l; ++m) {
           cmp1 = D[m];
-          cmp2 = Math.pow(this.distance(this.points[m],this.points[n]),2);
+          cmp2 = this.distance(this.points[m],this.points[n]);
           tmpD[m] = cmp1 > cmp2 ? cmp2 : cmp1;
         }
 
@@ -261,7 +252,7 @@ var KMeans = (function () {
 
       for (i = 0; i < l; ++i) {
         cmp1 = D[i];
-        cmp2 = Math.pow(this.distance(this.points[bestIdx],this.points[i]), 2);
+        cmp2 = this.distance(this.points[bestIdx],this.points[i]);
         D[i] = cmp1 > cmp2 ? cmp2 : cmp1;
       }
     }
