@@ -3,10 +3,16 @@ var KMeans = (function () {
   var ERR_K_IS_ZERO = 'k cannot be zero';
 
   if (typeof _ === 'function') {
-    var sortBy = _.sortBy, reduce = _.reduce;
+    var reduce = _.reduce;
   } else {
     /* Thanks to madrobby and Karnash */
-    var sortBy = function(a,b,c){c=a.slice();return c.sort(function(d,e){d=b(d),e=b(e);return(d<e?-1:d>e?1:0)})}, reduce = function(t,c) {var u; for (var i = (v=t[0],1); i < t.length;) v = c(v,t[i],i++,t); i<2 & u && u(); return v;};
+    reduce = function(t,c) {
+        var u;
+        for (var i = (v=t[0],1); i < t.length;)
+            v = c(v,t[i],i++,t);
+        i<2 & u && u();
+        return v;
+    };
   }
 
   /** Constructor */
@@ -33,7 +39,7 @@ var KMeans = (function () {
   /** Measures the Manhattan distance between two points. */
 
   kmeans.prototype.distance =  function(a, b) {
-    return Math.sqrt( Math.pow(a.x - b.x, 2) +  Math.pow(a.y - b.y, 2) );
+    return Math.pow(a.x - b.x, 2) +  Math.pow(a.y - b.y, 2);
   };
 
   /** Resets k-means and sets initial points*/
@@ -85,19 +91,10 @@ var KMeans = (function () {
     if (typeof callback === 'function') callback(null, this.centroids);
   };
 
-  /** Measure the distance to a point, specified by its index. */
-
-  kmeans.prototype.measureDistance =   function (i) {
-    var self = this;
-    return function ( centroid ) {
-      return self.distance(centroid, self.points[i]);
-    };
-  };
-
   /** Iterates over the provided points one time */
 
   kmeans.prototype.iterate = function () {
-    var i;
+    var i, j;
 
     /** When the result doesn't change anymore, the final result has been found. */
     if (this.converged === true) {
@@ -120,9 +117,16 @@ var KMeans = (function () {
 
     for (i = 0, l = this.points.length; i < l; ++i) {
 
-      var distances = sortBy(this.centroids, this.measureDistance(i));
-      var closestItem = distances[0];
-      var centroid = closestItem.centroid;
+      // Finds the centroid with the closest distance to the current point
+      var centroid = 0;
+      var minDist = this.distance(this.centroids[0], this.points[i]);
+      for(j = 1; j < this.centroids.length; j++){
+          var dist = this.distance(this.centroids[j], this.points[i]);
+          if(dist < minDist){
+              minDist = dist;
+              centroid = j;
+          }
+      }
 
       /**
        * When the point is not attached to a centroid or the point was
@@ -192,7 +196,7 @@ var KMeans = (function () {
      */
 
     for (i = 0; i < l; ++i) {
-      D[i] = Math.pow(this.distance(p0, this.points[i]), 2);
+      D[i] = this.distance(p0, this.points[i]);
     }
 
     var Dsum = reduce(D, addIterator);
@@ -223,7 +227,7 @@ var KMeans = (function () {
         var tmpD = [];
         for (var m = 0; m < l; ++m) {
           cmp1 = D[m];
-          cmp2 = Math.pow(this.distance(this.points[m],this.points[n]),2);
+          cmp2 = this.distance(this.points[m],this.points[n]);
           tmpD[m] = cmp1 > cmp2 ? cmp2 : cmp1;
         }
 
@@ -248,7 +252,7 @@ var KMeans = (function () {
 
       for (i = 0; i < l; ++i) {
         cmp1 = D[i];
-        cmp2 = Math.pow(this.distance(this.points[bestIdx],this.points[i]), 2);
+        cmp2 = this.distance(this.points[bestIdx],this.points[i]);
         D[i] = cmp1 > cmp2 ? cmp2 : cmp1;
       }
     }
