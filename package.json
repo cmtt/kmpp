@@ -1,0 +1,26 @@
+{
+  "name": "kmpp",
+  "version": "0.0.34",
+  "description": "k-means with k-means++-initialization",
+  "main": "kmpp.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {},
+  "keywords": [
+    "k-means",
+    "k-means++",
+    "clustering",
+    "data",
+    "partition",
+    "algorithm",
+    "kmeans",
+    "browser"
+  ],
+  "author": "Matthias Thoemmes <git@gmx.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cmtt/kmpp/issues"
+  },
+  "homepage": "https://github.com/cmtt/kmpp"
+}

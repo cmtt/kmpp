@@ -1,9 +1,23 @@
-var KMeans = (function () {
+var kmpp = (function () {
+
+  var ABS = Math.abs;
+  var POW = Math.pow;
+  var SQRT = Math.sqrt;
+  var RANDOM = Math.random;
+  var ROUND = Math.round;
+  var LOG = Math.log;
 
   var ERR_K_IS_ZERO = 'k cannot be zero';
+  var reduce = null;
 
-  if (typeof _ === 'function') {
-    var reduce = _.reduce;
+  if (typeof Array.prototype.reduce === 'function') {
+    reduce = function (arr) {
+      var args = [].slice.apply(arguments);
+      arr = args.shift();
+      return Array.prototype.reduce.apply(arr, args);
+    };
+  } else if (typeof _ === 'function') {
+    reduce = _.reduce;
   } else {
     /* Thanks to madrobby and Karnash */
     reduce = function(t,c) {
@@ -15,63 +29,88 @@ var KMeans = (function () {
     };
   }
 
-  /** Constructor */
+  /**
+   * @method kmpp
+   * @constructor
+   */
 
-  var kmeans = function () {
+  function kmpp() {
     this.kmpp = true;
-    this.maxWidth = 640;
-    this.maxHeight = 480;
     this.iterations = 0;
     this.converged = false;
     this.maxIterations = -1;
     this.k = 0;
-  };
+  }
 
-  /** Resets k-means. */
+  /**
+   * Resets k-means.
+   * @method reset
+   */
 
-  kmeans.prototype.reset = function () {
+  kmpp.prototype.reset = function () {
     this.iterations = 0;
     this.converged = false;
     this.points = [];
     this.centroids = [];
   };
 
-  /** Measures the Manhattan distance between two points. */
+  /**
+   * Measures the Manhattan distance between two points.
+   * @method distance
+   * @param {object} a
+   * @param {object} b
+   * @returns {number} distance
+   */
 
-  kmeans.prototype.distance =  function(a, b) {
-    return Math.pow(a.x - b.x, 2) +  Math.pow(a.y - b.y, 2);
+  kmpp.prototype.distance =  function(a, b) {
+    return ABS(a.x - b.x) + ABS(a.y - b.y);
   };
 
-  /** Resets k-means and sets initial points*/
+  /**
+   * Resets k-means and sets initial points.
+   * @method setPoints
+   * @param {object[]} points
+   */
 
-  kmeans.prototype.setPoints = function (points) {
+  kmpp.prototype.setPoints = function (points) {
     this.reset();
     this.points = points;
   };
 
-  /** Guess the amount of centroids to be found by the rule of thumb */
+  /**
+   * Guess the amount of centroids to be found by the rule of thumb
+   * @method guessK
+   */
 
-  kmeans.prototype.guessK = function () {
-    this.k = ~~(Math.sqrt(this.points.length*0.5));
+  kmpp.prototype.guessK = function () {
+    this.k = ~~(SQRT(this.points.length*0.5));
   };
 
-  /** Chooses random centroids */
+  /**
+   * Chooses random centroids.
+   * @method chooseRandomCentroids
+   */
 
-  kmeans.prototype.chooseRandomCentroids = function () {
+  kmpp.prototype.chooseRandomCentroids = function () {
     for (var i = 0; i < this.k; ++i) {
+      var point = ~~(RANDOM() * this.points.length);
       var centroid = {
         centroid : i,
-        x : ~~(Math.random()*this.maxWidth),
-        y : ~~(Math.random()*this.maxHeight),
+        x : this.points[point].x,
+        y : this.points[point].y,
         items : 0
       };
       this.centroids[i] = centroid;
     }
   };
 
-  /** Clusters the provided set of points. */
+  /**
+   * Clusters the current set of points.
+   * @method cluster
+   * @param {function} callback
+   */
 
-  kmeans.prototype.cluster = function (callback) {
+  kmpp.prototype.cluster = function (callback) {
 
     if (this.k === 0) {
       if (typeof callback === 'function') {
@@ -91,15 +130,17 @@ var KMeans = (function () {
     if (typeof callback === 'function') callback(null, this.centroids);
   };
 
-  /** Iterates over the provided points one time */
+  /**
+   * Iterates over the provided points one time.
+   * @method iterate
+   */
 
-  kmeans.prototype.iterate = function () {
+  kmpp.prototype.iterate = function () {
     var i, j;
 
     /** When the result doesn't change anymore, the final result has been found. */
-    if (this.converged === true) {
-      return;
-    }
+
+    if (this.converged === true) return;
 
     this.converged = true;
 
@@ -109,23 +150,21 @@ var KMeans = (function () {
 
     var sums = new Array(this.k);
 
-    for (i = 0; i < this.k; ++i) {
-      sums[i] = { x : 0, y : 0, items : 0 };
-    }
+    for (i = 0; i < this.k; ++i) sums[i] = [0, 0, 0]; // x, y, item count
 
     /** Find the closest centroid for each point */
 
     for (i = 0, l = this.points.length; i < l; ++i) {
 
-      // Finds the centroid with the closest distance to the current point
+      /** Finds the centroid with the closest distance to the current point */
       var centroid = 0;
       var minDist = this.distance(this.centroids[0], this.points[i]);
       for(j = 1; j < this.centroids.length; j++){
-          var dist = this.distance(this.centroids[j], this.points[i]);
-          if(dist < minDist){
-              minDist = dist;
-              centroid = j;
-          }
+        var dist = this.distance(this.centroids[j], this.points[i]);
+        if(dist < minDist){
+          minDist = dist;
+          centroid = j;
+        }
       }
 
       /**
@@ -144,25 +183,30 @@ var KMeans = (function () {
 
       /** Add the points' coordinates to the sum of its centroid */
 
-      sums[centroid].x += this.points[i].x;
-      sums[centroid].y += this.points[i].y;
+      sums[centroid][0] += this.points[i].x;
+      sums[centroid][1] += this.points[i].y;
 
-      ++sums[centroid].items;
+      ++sums[centroid][2];
     }
 
     /** Re-calculate the center of the centroid. */
 
     for (i = 0; i < this.k; ++i) {
-      if (sums[i].items > 0) {
-        this.centroids[i].x = sums[i].x / sums[i].items;
-        this.centroids[i].y = sums[i].y / sums[i].items;
+      if (sums[i][2] > 0) {
+        this.centroids[i].x = sums[i][0] / sums[i][2];
+        this.centroids[i].y = sums[i][1] / sums[i][2];
       }
-      this.centroids[i].items = sums[i].items;
+      this.centroids[i].items = sums[i][2];
     }
 
   };
 
-  kmeans.prototype.initCentroids = function () {
+  /**
+   * Initializes the cendroids using k-means++.
+   * @method initCentroids
+   */
+
+  kmpp.prototype.initCentroids = function () {
     var i, k,cmp1, cmp2;
 
     var addIterator = function (x,y) { return x+y; };
@@ -179,13 +223,13 @@ var KMeans = (function () {
     /** K-Means++ initialization */
 
     /** determine the amount of tries */
-    var D = [], ntries = 2 + Math.round(Math.log(this.k));
+    var D = [];
+    var ntries = 2 + ROUND(LOG(this.k));
 
     /** 1. Choose one center uniformly at random from the data points. */
 
     var l = this.points.length;
-
-    var p0 = this.points[ ~~(Math.random() * l) ];
+    var p0 = this.points[ ~~(RANDOM() * l) ];
 
     p0.centroid = 0;
     this.centroids = [ p0 ];
@@ -195,12 +239,9 @@ var KMeans = (function () {
      * the nearest center that has already been chosen.
      */
 
-    for (i = 0; i < l; ++i) {
-      D[i] = this.distance(p0, this.points[i]);
-    }
+    for (i = 0; i < l; ++i) D[i] = this.distance(p0, this.points[i]);
 
     var Dsum = reduce(D, addIterator);
-    // var Dsum = D.reduce(addIterator);
 
     /**
      * 3. Choose one new data point at random as a new center, using a
@@ -210,13 +251,12 @@ var KMeans = (function () {
      */
 
     for (k = 1; k < this.k; ++k) {
-
       var bestDsum = -1, bestIdx = -1;
 
       for (i = 0; i < ntries; ++i) {
-        var rndVal = ~~(Math.random() * Dsum);
-
-        for (var n = 0; n < l; ++n) {
+        var rndVal = ~~(RANDOM() * Dsum);
+        var n = 0;
+        for (; n < l; ++n) {
           if (rndVal <= D[n]) {
             break;
           } else {
@@ -232,10 +272,10 @@ var KMeans = (function () {
         }
 
         var tmpDsum = reduce(tmpD, addIterator);
-        // var tmpDsum = tmpD.reduce(addIterator);
 
         if (bestDsum < 0 || tmpDsum < bestDsum) {
-          bestDsum = tmpDsum, bestIdx = n;
+          bestDsum = tmpDsum;
+          bestIdx = n;
         }
       }
 
@@ -258,9 +298,9 @@ var KMeans = (function () {
     }
 
   };
-  return kmeans;
+
+  return kmpp;
+
 })();
 
-if (typeof module === 'object') {
-  module.exports = KMeans;
-}
+if (typeof module === 'object') module.exports = kmpp;
