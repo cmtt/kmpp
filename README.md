@@ -1,20 +1,12 @@
-kmpp
-====
+# kmpp
 
-When dealing with lots of data points, clustering algorithms may be needed in
-order to group them. The k-means algorithm partitions _n_ data points into
-_k_ clusters and finds the centroids of these clusters incrementally.
+When dealing with lots of data points, clustering algorithms may be used to group them. The k-means algorithm partitions _n_ data points into _k_ clusters and finds the centroids of these clusters incrementally.
 
-The basic k-means algorithm is initialized with _k_ centroids at random
-positions.
+The algorithm assigns data points to the closest cluster, and the centroids of each cluster are re-calculated. These steps are repeated until the centroids do not changing anymore.
 
-It assigns data points to the closest cluster, the centroids of each
-cluster are re-calculated afterwards. These assignment/recalculating steps are
-repeated until the centroids are not changing anymore.
+The basic k-means algorithm is initialized with _k_ centroids at random positions. This implementation addresses some disadvantages of the arbitrary initialization method with the k-means++ algorithm (see "Further reading" at the end).
 
-This implementation addresses some disadvantages of the arbitrary
-initialization method with the k-means++ algorithm (see "Further reading" at the
-end).
+## Installation
 
 ## Installing via npm
 
@@ -23,83 +15,53 @@ Install kmpp as Node.js module via NPM:
 $ npm install kmpp
 ````
 
-## Setting up a new instance
+## Example
 
-````js
-  // var kmpp = require('kmpp'); /* When running in Node.js */
-  var k = new kmpp();
-````
+```javascript
+var kmpp = require('kmpp');
 
-## Attributes
+kmpp([
+  [x1, y1, ...],
+  [x2, y2, ...],
+  [x3, y3, ...],
+  ...
+], {
+  k: 4
+});
 
-### kmpp [Boolean]
+// =>
+// { converged: true,
+//   centroids: [[xm1, ym1, ...], [xm2, ym2, ...], [xm3, ym3, ...]],
+//   counts: [ 7, 6, 7 ],
+//   assignments: [ 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1 ]
+// }
+```
 
-Enables or disables k-means++ initialization. If disabled, the initial
-centroids are selected randomly. It is recommended to leave this setting
-enabled, as it reduces the amount of the actual algorithm's iteration steps.
+## API
 
-### k [number]
+### `kmpp(points[, opts)`
 
-This value defines the amount of clusters. You can let the module guess the
-amount by the rule of thumb with the guessK() function. It is crucial to select
-an appropriate value of clusters in order to find a good solution.
+Exectes the k-means++ algorithm on `points`.
 
-### maxIterations [number]
+Arguments:
+- `points` (`Array`): An array-of-arrays containing the points in format `[[x1, y1, ...], [x2, y2, ...], [x3, y3, ...], ...]`
+- `opts`: object containing configuration parameters. Parameters are
+  - `distance` (`function`): Optional function that takes two points and returns the distance between them.
+  - `initialize` (`Boolean`): Perform initialization. If false, uses the initial state provided in `centroids` and `assignments`. Otherwise discards any initial state and performs initialization.
+  - `k` (`Number`): number of centroids. If not provided, `sqrt(n / 2)` is used, where `n` is the number of points.
+  - `kmpp` (`Boolean`, default: `true`): If true, uses k-means++ initialization. Otherwise uses naive random assignment.
+  - `maxIterations` (`Number`, default: `100`): Maximum allowed number of iterations.
+  - `norm` (`Number`, default: `2`): L-norm used for distance computation. `1` is Manhattan norm, `2` is Euclidean norm. Ignored if `distance` function is provided.
+  - `centroids` (`Array`): An array of centroids. If `initialize` is false, used as initialization for the algorithm, otherwise overwritten in-place if of the correct size.
+  - `assignments` (`Array`): An array of assignments. Used for initialization, otherwise overwritten.
+  - `counts` (`Array`): An output array used to avoid extra allocation. Values are discarded and overwritten.
 
-Defines the maximum amount of iterations which might be useful when performance
-is more important than accuracy. Disabled by default with the value -1.
-
-### converged
-
-Returns true when the clustering is finished, false otherwise.
-
-### iterations
-
-Returns the amount of iterations.
-
-## Methods
-
-### reset ()
-
-Clears data points and calculated results.
-
-### setPoints (points)
-
-setPoints assigns an array of data points which should be clustered and calls
-reset(). Use the format [{ x : x0, y : y0 }, ... , { x : xn, y: yn }].
-
-### guessK ()
-
-Guess the amount of clusters by the rule of thumb. (k = Math.sqrt( n * 0.5)).
-See below for advice for choosing the right value for k.
-
-### initCentroids ()
-
-The initial centroids are selected by the k-means++ algorithm or randomly. The
-latter behavior is disabled by default. k-means++ finds initial values close to
-the final result, therefore, less iterations are required for the final result
-usually.
-
-### iterate ()
-
-As k-means is an incremental algorithm, the iterate function should be called
-until the centroids do not change anymore.
-
-### cluster (callback)
-
-Convenience function which calls the iterate() function until the algorithm has
-finished.
-
-# Tests
-
-For the moment, you could open index.html or index-animated.html in your
-browser.
-
-# Todo
-
-  * remove the dependency on jQuery
-  * add build tools
-  * better testing and visualization
+Returns an object containing information about the centroids and point assignments. Values are:
+- `converged`: `true` if the algorithm converged successfully
+- `centroids`: a list of centroids
+- `counts`: the number of points assigned to each respective centroid
+- `assignments`: a list of integer assignments of each point to the respective centroid
+- `iterations`: number of iterations used
 
 # Credits
 
@@ -107,6 +69,8 @@ browser.
   reducing the amount of function calls, reverting to Manhattan distance
   for measurements and improved the random initialization by choosing from
   points
+
+* [Ricky Reusser](https://github.com/rreusser) refactored API
 
 # Further reading
 
@@ -117,4 +81,4 @@ browser.
 
 # License
 
-MIT License
+&copy; 2017. MIT License.
