@@ -1,10 +1,10 @@
 {
   "name": "kmpp",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "k-means with k-means++-initialization",
-  "main": "kmpp.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "node test/*.js",
+    "test": "node test",
     "start": "budo --open --live --host localhost example/index.js",
     "build": "browserify -g es2040 example/index.js | uglifyjs -cm | indexhtmlify | html-inject-github-corner > docs/index.html",
     "lint": "semistandard",

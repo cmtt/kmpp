@@ -1,5 +1,9 @@
 # Changes
 
+0.1.0 - 2018/??/??
+
+  - refactored API thanks to [rreuser](https://github.com/rresuer)
+
 0.0.34 - 2015/10/19
 
   - renamed to "kmpp" and released on the NPM
