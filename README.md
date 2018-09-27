@@ -66,7 +66,7 @@ Clears data points and calculated results.
 ### setPoints (points)
 
 setPoints assigns an array of data points which should be clustered and calls
-reset(). Use the the format [{ x : x0, y : y0 }, ... , { x : xn, y: yn }].
+reset(). Use the format [{ x : x0, y : y0 }, ... , { x : xn, y: yn }].
 
 ### guessK ()
 
