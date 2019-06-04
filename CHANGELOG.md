@@ -1,6 +1,6 @@
 # Changes
 
-0.1.0 - 2018/??/??
+0.1.0 - 2019/06/03
 
   - refactored API thanks to [rreuser](https://github.com/rresuer)
 
