@@ -1,5 +1,10 @@
 # Changes
 
+0.1.1 - 2019/06/12
+
+  - Updating [budo](https://github.com/mattdesl/budo) to recent version due to potential security vulnerabilities.
+  - Updating all dependencies to most recent versions.
+
 0.1.0 - 2019/06/03
 
   - refactored API thanks to [rreuser](https://github.com/rresuer)
