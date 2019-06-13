@@ -1,5 +1,7 @@
 # kmpp
 
+[![Travis CI](https://travis-ci.org/cmtt/kmpp.svg)](https://travis-ci.org/cmtt/kmpp)
+
 When dealing with lots of data points, clustering algorithms may be used to group them. The k-means algorithm partitions _n_ data points into _k_ clusters and finds the centroids of these clusters incrementally.
 
 The algorithm assigns data points to the closest cluster, and the centroids of each cluster are re-calculated. These steps are repeated until the centroids do not changing anymore.
