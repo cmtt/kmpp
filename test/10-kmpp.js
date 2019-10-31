@@ -22,7 +22,7 @@ test('effectively never fails given km++ initilaization', function (t) {
   }
 
   for (run = 0; run < runs; run++) {
-    var out = kmpp(x, {k: k, kmpp: true});
+    var out = kmpp(x, { k: k, kmpp: true });
 
     for (i = 0; i < k; i++) {
       t.assert(out.centroids[i][0] % clusterOffset < n, 'mean ' + i + ' % ' + clusterOffset + ' < ' + n + ' (got ' + (out.centroids[i] % clusterOffset) + ')');
@@ -51,7 +51,7 @@ test('runs successfully without km++ initialization', function (t) {
   }
 
   for (run = 0; run < runs; run++) {
-    var out = kmpp(x, {k: k, kmpp: false});
+    var out = kmpp(x, { k: k, kmpp: false });
 
     var sum = 0;
     for (i = 0; i < k; i++) {
@@ -74,7 +74,7 @@ test('continues iteration', function (t) {
     x[i] = [i];
   }
 
-  var out1 = kmpp(x, {k: k});
+  var out1 = kmpp(x, { k: k });
 
   t.equal(out1.centroids.length, k, 'has the right number of centroids');
   t.equal(out1.assignments.length, n, 'assignments is the right length');
@@ -84,13 +84,13 @@ test('continues iteration', function (t) {
   var c1 = JSON.stringify(out1.centroids);
   var a1 = out1.assignments.slice();
 
-  var out2 = kmpp(x, {assignments: out1.assignments, centroids: out1.centroids, k: k});
+  var out2 = kmpp(x, { assignments: out1.assignments, centroids: out1.centroids, k: k });
 
   t.deepEqual(out2.assignments, a1, 'assignments unchanged on subsequent runs');
   t.equal(JSON.stringify(out2.centroids), c1, 'assignments unchanged on subsequent runs');
   t.equal(out2.iterations, 1, 'Only one iteration on subsequent runs');
 
-  var out3 = kmpp(x, {assignments: out1.assignments, centroids: out1.centroids, k: k});
+  var out3 = kmpp(x, { assignments: out1.assignments, centroids: out1.centroids, k: k });
   t.ok(out3.iterations >= 1, 'Restarts');
 
   t.end();
