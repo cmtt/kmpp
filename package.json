@@ -1,6 +1,6 @@
 {
   "name": "kmpp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "k-means with k-means++-initialization",
   "main": "lib/index.js",
   "scripts": {

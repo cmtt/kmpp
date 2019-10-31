@@ -1,5 +1,12 @@
 # Changes
 
+0.1.2 - 2019/10/31
+
+  - Adressing vulnerabilities:
+    - Bump lodash from 4.17.11 to 4.17.15.
+    - Bump eslint-utils from 1.3.1 to 1.4.3.
+  - Updating all dependencies to most recent versions.
+
 0.1.1 - 2019/06/12
 
   - Updating [budo](https://github.com/mattdesl/budo) to recent version due to potential security vulnerabilities.
