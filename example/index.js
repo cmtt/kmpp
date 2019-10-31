@@ -101,11 +101,11 @@ regl({
           gl_FragColor = vec4(col, alpha * smoothstep(size, size - 2.0, r));
         }
       `,
-      depth: {enable: false},
+      depth: { enable: false },
       blend: {
         enable: true,
-        func: {srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1},
-        equation: {rgb: 'reverse subtract', alpha: 'add'}
+        func: { srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1 },
+        equation: { rgb: 'reverse subtract', alpha: 'add' }
       },
       attributes: {
         xy: regl.prop('xy'),
@@ -125,14 +125,14 @@ regl({
     });
 
     panel([
-      {label: 'norm', type: 'range', min: 0.5, max: 4, step: 0.5, initial: settings.norm},
-      {label: 'k', type: 'range', min: 0, max: 100, step: 1, initial: settings.k},
-      {label: 'points', type: 'range', min: 1000, max: 20000, step: 100, initial: settings.points},
-      {label: 'uniformity', type: 'range', min: 0, max: 1, step: 0.1, initial: settings.uniformity},
-      {label: 'periodicity', type: 'range', min: 1, max: 10, step: 0.5, initial: settings.periodicity},
-      {label: 'kmpp', type: 'checkbox', initial: settings.kmpp},
-      {label: 'restart', type: 'button', action: restart}
-    ], {position: 'top-left', width: 350}).on('input', (data) => {
+      { label: 'norm', type: 'range', min: 0.5, max: 4, step: 0.5, initial: settings.norm },
+      { label: 'k', type: 'range', min: 0, max: 100, step: 1, initial: settings.k },
+      { label: 'points', type: 'range', min: 1000, max: 20000, step: 100, initial: settings.points },
+      { label: 'uniformity', type: 'range', min: 0, max: 1, step: 0.1, initial: settings.uniformity },
+      { label: 'periodicity', type: 'range', min: 1, max: 10, step: 0.5, initial: settings.periodicity },
+      { label: 'kmpp', type: 'checkbox', initial: settings.kmpp },
+      { label: 'restart', type: 'button', action: restart }
+    ], { position: 'top-left', width: 350 }).on('input', (data) => {
       var needsInitialize = false;
       var needsRestart = false;
       if ((data.points !== settings.points) || (data.uniformity !== settings.uniformity) || (data.periodicity !== settings.periodicity)) {
@@ -152,12 +152,12 @@ regl({
     window.addEventListener('resize', initialize, false);
 
     iteration = 0;
-    regl.frame(({tick}) => {
+    regl.frame(({ tick }) => {
       if (km.converged) return;
 
       iteration++;
 
-      km = kmpp(x, Object.assign({maxIterations: 1,
+      km = kmpp(x, Object.assign({ maxIterations: 1,
         norm: settings.norm,
         k: settings.k === 0 ? undefined : settings.k,
         kmpp: settings.kmpp
@@ -167,12 +167,12 @@ regl({
 
       var colorList = new Array(km.centroids.length).fill(0).map((d, i) => hsl([i / km.centroids.length, 0.5, 0.5]));
 
-      pointColorBuf({data: km.assignments.map(i => colorList[i])});
-      centroidColorBuf({data: colorList});
-      pointBuf({data: x});
-      centroidBuf({data: km.centroids});
+      pointColorBuf({ data: km.assignments.map(i => colorList[i]) });
+      centroidColorBuf({ data: colorList });
+      pointBuf({ data: x });
+      centroidBuf({ data: km.centroids });
 
-      regl.clear({color: [1, 1, 1, 1]});
+      regl.clear({ color: [1, 1, 1, 1] });
 
       drawPoints({
         xy: pointBuf,
