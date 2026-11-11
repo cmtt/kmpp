@@ -1,5 +1,12 @@
 # Changes
 
+0.2.0 - unreleased
+
+  - Added opt-in `algorithm: 'emeans'` (mini-batch e-means), backed by the new standalone [`emeans`](packages/emeans) package, with `epochs`, `batchSize` and `alpha0` options. Lloyd remains the default.
+  - Fixed `iterations` reporting one too many when `maxIterations` was reached.
+  - Fixed the default `assignments` array being allocated with length `k` instead of `n`.
+  - Added `bench/run.js`, more tests (100% line coverage) and a GitHub Actions workflow replacing Travis.
+
 0.1.2 - 2019/10/31
 
   - Adressing vulnerabilities:

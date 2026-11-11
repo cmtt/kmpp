@@ -1,0 +1,59 @@
+{
+  "name": "emeans",
+  "version": "0.1.1",
+  "description": "e-means: fast mini-batch k-means with EMA updates and scaling-law hyperparameters",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.mjs",
+    "index.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmtt/kmpp.git",
+    "directory": "packages/emeans"
+  },
+  "keywords": [
+    "k-means",
+    "kmeans",
+    "e-means",
+    "emeans",
+    "mini-batch",
+    "mini-batch-kmeans",
+    "clustering",
+    "vector-quantization",
+    "embeddings",
+    "machine-learning",
+    "typescript"
+  ],
+  "author": "Matthias Thoemmes <thoemmes@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cmtt/kmpp/issues"
+  },
+  "homepage": "https://cmtt.github.io/kmpp/",
+  "engines": {
+    "node": ">=18"
+  },
+  "module": "index.mjs",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.js",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

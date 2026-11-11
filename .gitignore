@@ -2,3 +2,6 @@ dist
 *.log
 lib-cov
 node_modules
+coverage
+.nyc_output
+.claude
