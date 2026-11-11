@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node test && npm test --workspace=emeans",
     "start": "budo --open --live --host localhost example/index.js",
-    "build": "browserify -g es2040 example/index.js | uglifyjs -cm | indexhtmlify | html-inject-github-corner > docs/index.html",
+    "build": "browserify -g es2040 example/index.js | uglifyjs -cm | indexhtmlify | html-inject-github-corner > docs/index.html && node scripts/inject-head.js",
     "lint": "semistandard",
     "lint-fix": "semistandard --fix",
     "bench": "node bench/run.js",
