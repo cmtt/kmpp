@@ -1,0 +1,29 @@
+name: Release emeans
+# Publishes packages/emeans to npm with provenance via trusted publishing (OIDC),
+# so no npm token is stored. Trigger by pushing a tag like emeans-v0.1.1.
+on:
+  push:
+    tags: ['emeans-v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install --no-audit --no-fund
+      - run: npm test
+      - name: Check tag matches package version
+        run: |
+          v=$(node -p "require('./packages/emeans/package.json').version")
+          [ "refs/tags/emeans-v$v" = "$GITHUB_REF" ] || { echo "tag does not match version $v"; exit 1; }
+      - run: npm publish --provenance --access public
+        working-directory: packages/emeans
