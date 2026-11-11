@@ -8,7 +8,8 @@
     "start": "budo --open --live --host localhost example/index.js",
     "build": "browserify -g es2040 example/index.js | uglifyjs -cm | indexhtmlify | html-inject-github-corner > docs/index.html",
     "lint": "semistandard",
-    "lint-fix": "semistandard --fix"
+    "lint-fix": "semistandard --fix",
+    "bench": "node bench/run.js"
   },
   "repository": {
     "type": "git",

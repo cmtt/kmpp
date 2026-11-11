@@ -54,6 +54,9 @@ Arguments:
   - `kmpp` (`Boolean`, default: `true`): If true, uses k-means++ initialization. Otherwise uses naive random assignment.
   - `maxIterations` (`Number`, default: `100`): Maximum allowed number of iterations.
   - `norm` (`Number`, default: `2`): L-norm used for distance computation. `1` is Manhattan norm, `2` is Euclidean norm. Ignored if `distance` function is provided.
+  - `algorithm` (`String`, default: `'lloyd'`): Set to `'emeans'` to use the mini-batch [e-means](https://e-means.github.io/) update (EMA updates, scaling-law batch/step size, dead-cluster revival). Runs a fixed epoch budget instead of iterating to convergence.
+  - `epochs` (`Number`, default: `5`): e-means only. Number of passes over the data.
+  - `batchSize`, `alpha0` (`Number`): e-means only. Override the scaling-law batch size and initial step size.
   - `centroids` (`Array`): An array of centroids. If `initialize` is false, used as initialization for the algorithm, otherwise overwritten in-place if of the correct size.
   - `assignments` (`Array`): An array of assignments. Used for initialization, otherwise overwritten.
   - `counts` (`Array`): An output array used to avoid extra allocation. Values are discarded and overwritten.
