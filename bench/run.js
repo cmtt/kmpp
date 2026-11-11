@@ -37,7 +37,7 @@ function gauss (rng) {
 function makeData (n, d, k, seed) {
   var rng = prng(seed);
   var centers = [];
-  var i, j, c, x = [];
+  var i; var j; var c; var x = [];
   for (c = 0; c < k; c++) {
     centers[c] = [];
     for (j = 0; j < d; j++) centers[c][j] = gauss(rng) * 3;
@@ -51,14 +51,14 @@ function makeData (n, d, k, seed) {
 }
 
 function sqdist (a, b) {
-  var s = 0, i, t;
+  var s = 0; var i; var t;
   for (i = a.length - 1; i >= 0; i--) { t = a[i] - b[i]; s += t * t; }
   return s;
 }
 
 // True MSE against the nearest final centroid (fresh assignment pass).
 function mse (x, centroids) {
-  var i, c, best, d, s = 0;
+  var i; var c; var best; var d; var s = 0;
   for (i = 0; i < x.length; i++) {
     best = Infinity;
     for (c = 0; c < centroids.length; c++) {
@@ -121,7 +121,10 @@ CONFIGS.forEach(function (cfg) {
   Object.keys(runs).forEach(function (name) {
     var rs = runs[name];
     rows.push({
-      n: cfg.n, d: cfg.d, k: cfg.k, method: name,
+      n: cfg.n,
+      d: cfg.d,
+      k: cfg.k,
+      method: name,
       epochs: median(rs.map(function (r) { return r.epochs; })),
       batch: rs[0].batch,
       ms: Math.round(median(rs.map(function (r) { return r.ms; }))),

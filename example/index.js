@@ -157,7 +157,8 @@ regl({
 
       iteration++;
 
-      km = kmpp(x, Object.assign({ maxIterations: 1,
+      km = kmpp(x, Object.assign({
+        maxIterations: 1,
         norm: settings.norm,
         k: settings.k === 0 ? undefined : settings.k,
         kmpp: settings.kmpp

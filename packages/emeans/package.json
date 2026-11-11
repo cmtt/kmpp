@@ -1,0 +1,38 @@
+{
+  "name": "emeans",
+  "version": "0.1.0",
+  "description": "e-means: fast mini-batch k-means with EMA updates and scaling-law hyperparameters",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cmtt/kmpp.git",
+    "directory": "packages/emeans"
+  },
+  "keywords": [
+    "k-means",
+    "kmeans",
+    "e-means",
+    "mini-batch",
+    "clustering",
+    "machine-learning"
+  ],
+  "author": "Matthias Thoemmes <thoemmes@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cmtt/kmpp/issues"
+  },
+  "homepage": "https://github.com/cmtt/kmpp/tree/master/packages/emeans",
+  "engines": {
+    "node": ">=10"
+  }
+}
